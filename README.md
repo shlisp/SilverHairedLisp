@@ -47,10 +47,10 @@ Provide a subset of Common Lisp implemented on Java that is far easier to learn 
 
 # Java Compilation Example (Experimental)
 
-
+```lisp
 (defun foo (x) (+ x 2))
 (compile 'foo)
-
+```
 
 # Launching (Planned)
 

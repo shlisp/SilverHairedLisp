@@ -22,14 +22,15 @@ Powered by Java 25 virtual threads, it's ready to use simply by extracting a ZIP
   Great for experimenting with concurrent programming.
 
 * **Experimental Java Source Code Compiler**  
-  ```lisp
+
+```lisp
   (defun foo (x) (+ x 2))
   (compile 'foo)
 ```
 
 
 
-# Running compile generates Java source code, which can then be built with javac.
+## Running compile generates Java source code, which can then be built with javac.
 
 The generated .class files can be loaded back into TinyLisp.
 
@@ -37,7 +38,7 @@ Supports Telnet connections alongside standard I/O
 
 Supports multiple sessions, making it convenient for verifying multi-threaded behavior.
 
-# Goals
+## Goals
 To provide an implementation where Common Lisp users can say:
 
 "I can use Lisp on Java without having to learn all new concepts like in Clojure."
@@ -45,31 +46,24 @@ To provide an implementation where Common Lisp users can say:
 Provide a subset of Common Lisp implemented on Java that is far easier to learn for experienced Common Lisp developers than Clojure.
 
 
-# Java Compilation Example (Experimental)
+## Java Compilation Example (Experimental)
 
 ```lisp
 (defun foo (x) (+ x 2))
 (compile 'foo)
 ```
 
-# Launching (Planned)
-
-Command names are subject to change based on implementation.
-
-.bat for Windows
-
-.sh bundled for macOS
 
 
-# Installation
+## Installation
 
-## Install Java 25.
+* Install Java 25.
 
-## Download the TinyLisp ZIP archive.
+* Download the TinyLisp ZIP archive.
 
-## Extract it to any folder.
+* Extract it to any folder.
 
-## Navigate to the installation directory:
+* Navigate to the installation directory:
 
     Windows: Launch via winshl1021.ps
 
@@ -77,13 +71,13 @@ Command names are subject to change based on implementation.
 
 For more detailed syntax and current limitations, please refer to the separate documentation (xxxx.md) within the GitHub repository.
 
-# Feedback
+## Feedback
 
 We plan to use GitHub Discussions.
 
 Questions, ideas, and casual chat are all welcome!
 
-# License
+## License
 
 Custom License (written in both Japanese and English).
 

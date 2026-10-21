@@ -1,0 +1,491 @@
+
+;; 関数単位のコンパイルのテスト
+;; (C) 2026 Masahito Hemmi
+;;
+;;     (test-file "ci/co1.txt")
+
+
+
+(defun quote-0 ()
+   '123)
+   
+
+;;           コンパイルが成功したらテスト実施
+
+(if-compiles (compile 'quote-0)
+   (assert-true "quote-0"   (eql  123 (quote-0))   ))
+
+;; ----------------------
+
+(defun quote-2 ()
+   '"hello
+world")
+
+
+(if-compiles (compile 'quote-2)
+   (assert-true "quote-2"   (string=  "hello
+world"   (quote-2)) 
+   ))
+
+;; ----------------------
+
+(defun quote-3 ()
+   'my-symbol)
+
+(if-compiles (compile 'quote-3)
+   (assert-true "quote-3"   (equal  'my-symbol (quote-3)) 
+   ))
+
+;; ----------------------
+
+(defun quote-4 ()
+   '(1 2 3))
+
+(if-compiles (compile 'quote-4)
+   (assert-true "quote-4"   (equal '(1 2 3)  (quote-4)) 
+   ))
+
+;; ----------------------
+
+
+
+
+
+
+(defun boo (x y) (+ x y))
+
+;;           コンパイルが成功したらテスト実施
+
+(if-compiles (compile 'boo)
+   (progn (assert-true "boo-1"   (eql           3       (boo 1 2)))
+                                 ;; intの足し算は、javaと同じ仕様
+          (assert-true "boo-2"   (eql   -2147483648     (boo 2147483647  1)))
+   )
+)
+
+
+
+(defun baz (x) (if (> x 0) 111  222))
+
+;;           コンパイルが成功したらテスト実施
+
+(if-compiles (compile 'baz)
+   (progn (assert-true "baz-1"   (eql   111     (baz  1))  )
+          (assert-true "baz-2"   (eql   222     (baz  0))  )
+   )
+)
+
+
+
+
+(defun baz2(x) (cons 3 (car (cdr x)) )  )
+
+;;           コンパイルが成功したらテスト実施
+
+(if-compiles (compile 'baz2)
+   (progn (assert-true "baz2-1"   (equal  '(3 . b)     (baz2  '(a b c   )))  )
+          (assert-true "baz2-2"   (equal  '(3)     (baz2  '(a)  ))  )
+   )
+)
+
+
+
+
+(defun inc2 (x)
+  (setq x (1+ x)))
+
+;;           コンパイルが成功したらテスト実施
+
+(if-compiles (compile 'inc2)
+   (progn (assert-true "inc2-1"   (eql  101     (inc2  100))  )
+   )
+)
+
+
+(defun block-2 (x)
+   (return-from block-2 x)
+)
+
+(if-compiles (compile 'block-2)
+   (progn (assert-true "block-2-1"   (eql  100     (block-2  100))  )
+   )
+)
+
+
+(defun block-1 (x)
+   (block outer
+      (+ 3
+         (block inner 
+            (if (< x 0)
+                (return-from outer "minus")
+                (if (= x 0)
+                    (return-from inner 100)
+                    (return-from block-1  9999) ))))))
+
+
+(if-compiles (compile 'block-1)
+   (progn (assert-true "block-1-1"   (string=  "minus"  (block-1  -1))  )
+          (assert-true "block-1-2"   (eql      103      (block-1  0 ))  )
+          (assert-true "block-1-3"   (eql      9999     (block-1  10))  )
+   )
+)
+
+;;;   ---- test lambda ----
+
+(defun lam2(x y)
+   (lambda (z) (list x y z)))
+
+
+(if-compiles (compile 'lam2)
+    (assert-true "lam2-1"   (string=  "compile"    "compile" )  )
+)
+
+(defvar *zz* (lam2 1 2))
+
+(assert-true "lam2-2"   (equal  '(1 2 3)   (funcall *zz* 3) ) )
+
+
+;;;   ---- test special-variable (dynamic-bind) ----
+
+
+(defvar *aaa* 10)
+(defvar *bbb* 20)
+
+(defun subsub-1 (d e)
+   (list   *aaa*  *bbb*    d e))
+
+   
+(defun mainmain-2 (*aaa* c)
+   (subsub-1 (+ *aaa* c)  (* c *bbb*)))
+
+
+(if-compiles (compile 'subsub-1)
+   (assert-true "subsub-1-1"   (string=  "subsub"  "subsub"  )  )
+)
+
+(if-compiles (compile 'mainmain-2)
+   (assert-true "mainmain-2-1"   (equal  '(100 20 300 4000)     (mainmain-2  100 200)    )  )
+)
+
+;;   SBCL 2.4.5,
+;;  * (mainmain-2  100 200)
+;;  (100 20 300 4000)
+
+
+
+;;;   ---- test unwind-protect ----
+
+(defparameter *unw-1* 0)
+(defparameter *unw-2* 0)
+
+(defun unw-1 ()
+   (unwind-protect
+       123
+       (setq  *unw-1*  100)
+       (setq  *unw-2*  200)
+       ))
+
+
+(if-compiles (compile 'unw-1)
+   (assert-true "unw-1-1"   (equal  123    (unw-1)  )  )
+   (assert-true "unw-1-2"   (equal  100    *unw-1* )  )
+   (assert-true "unw-1-3"   (equal  200    *unw-2* )  )
+)
+
+
+;;;   ---- test flet ----
+
+
+(defun flet-2 (x)
+
+   (flet ((fn1 (a) (* a 2))
+          (fn2 (b) (+ b 3)))
+      (list (fn1 x) (fn2 x))  )
+)
+
+
+(if-compiles (compile 'flet-2)
+   (assert-true "flet-2-1"   (equal  '(20 13)    (flet-2 10)  )  )
+)
+
+
+;;;   ---- test dolist ----
+
+
+(defun dolist-1 (x)
+  (dolist (item x)
+     (print item)))
+
+(if-compiles (compile 'dolist-1)
+   (assert-true "dolist-1-1"   (eql  nil  (dolist-1 '("hello" "world"))  )   )
+)
+
+
+;;;   ---- test dotimes ----
+
+(defun dotimes-1 (n)
+  (let ((sum 0))
+    (dotimes (i n)
+       (setq sum (+ sum i 1)))
+   sum))
+
+(if-compiles (compile 'dotimes-1)
+   (assert-true "dotimes-1-1"   (eql  55  (dotimes-1 10 ) ) )
+)
+
+
+
+;;;   ---- test when ----
+
+(defparameter *when-1* 0)
+
+
+(defun when-1 (n)
+  (when (> n 0)
+     (setq *when-1* 10)
+     "end"))
+
+
+(if-compiles (compile 'when-1)
+   (assert-true "when-1-1"   (eql  nil  (when-1 0 ) ) )
+   (assert-true "when-1-2"   (eql  0    *when-1* ) )
+
+   (assert-true "when-1-3"   (string=  "end"  (when-1 1 ) ) )
+   (assert-true "when-1-4"   (eql  10    *when-1* ) )
+
+)
+
+
+;;;   ---- test unless ----
+
+(defparameter *unless-1* 0)
+
+
+(defun unless-1 (n)
+  (unless (> n 0)
+     (setq *unless-1* 10)
+     "end"))
+
+
+(if-compiles (compile 'unless-1)
+   (assert-true "unless-1-1"   (eql  nil  (unless-1 1 ) ) )
+   (assert-true "unless-1-2"   (eql  0    *unless-1* ) )
+
+   (assert-true "unless-1-3"   (string=  "end"  (unless-1 0 ) ) )
+   (assert-true "unless-1-4"   (eql  10    *unless-1* ) )
+
+)
+
+;;;   ---- test and ----
+
+
+(defun and-1 (a b c)
+   (and a b c))
+
+
+(if-compiles (compile 'and-1)
+   (assert-true "and-1-1"   (eql  7   (and-1 t t   7 ) ) )
+   (assert-true "and-1-2"   (eql  nil (and-1 t nil 7 ) ) )
+)
+
+;;;   ---- test or ----
+
+(defun or-1 (a b c)
+   (or a b c))
+
+(if-compiles (compile 'or-1)
+   (assert-true "and-1-1"   (eql  t   (or-1 t nil   7 ) ) )
+   (assert-true "and-1-2"   (eql  nil (or-1 nil nil nil ) ) )
+)
+
+;;;   ---- test cond ----
+
+(defun cond-1 (a)
+   (cond ((= a 3) 7)
+         ((= a 2) 8)
+         (t 9)))
+
+
+(if-compiles (compile 'cond-1)
+   (assert-true "cond-1-1"   (eql  8   (cond-1 2 ) ) )
+   (assert-true "cond-1-2"   (eql  7   (cond-1 3 ) ) )
+   (assert-true "cond-1-3"   (eql  9   (cond-1 0 ) ) )
+
+)
+
+
+;;;   ---- test java call（段階1: リフレクションで呼ぶ） ----
+
+(java-import '[ java.lang  Integer ])
+(java-import '[ java.util  ArrayList ])
+
+(defun jcall-1 (s)
+   (.toUpperCase s))
+
+(if-compiles (compile 'jcall-1)
+   (assert-true "jcall-1"     (string= "ABC" (jcall-1 "abc")))
+)
+
+;; .m は戻り値の boolean を t / nil にする
+(defun jcall-2 (s x)
+   (.equals s x))
+
+(if-compiles (compile 'jcall-2)
+   (assert-true "jcall-2-1"   (eq t   (jcall-2 "abc" "abc")))
+   (assert-true "jcall-2-2"   (eq nil (jcall-2 "abc" "xyz")))
+)
+
+;; .-m は戻り値を変換しない（Java の Boolean のまま）
+(defun jcall-3 (s x)
+   (.-equals s x))
+
+(if-compiles (compile 'jcall-3)
+   (assert-true "jcall-3-1"   (not (eq t (jcall-3 "abc" "abc"))))
+   (assert-true "jcall-3-2"   (eq t (.booleanValue (jcall-3 "abc" "abc"))))
+)
+
+;; static メソッド
+(defun jcall-4 (s)
+   (Integer:parseInt s))
+
+(if-compiles (compile 'jcall-4)
+   (assert-true "jcall-4"     (eql 123 (jcall-4 "123")))
+)
+
+;; .m の引数: nil → false、nil 以外のシンボル → true、キーワードはそのまま
+;; （本体の途中にある式 (.add ...) が文になることのテストも兼ねる）
+(defun jcall-5 (lst v)
+   (.add lst v)
+   (.-get lst 0))
+
+(if-compiles (compile 'jcall-5)
+   (assert-true "jcall-5-1"   (eq nil (.booleanValue (jcall-5 (new ArrayList) nil))))
+   (assert-true "jcall-5-2"   (eq t   (.booleanValue (jcall-5 (new ArrayList) t))))
+   (assert-true "jcall-5-3"   (eq :kw (jcall-5 (new ArrayList) :kw)))
+)
+
+;; .-m の引数はシンボルのまま渡す
+(defun jcall-6 (lst v)
+   (.-add lst v)
+   (.-get lst 0))
+
+(if-compiles (compile 'jcall-6)
+   (assert-true "jcall-6"     (eq nil (jcall-6 (new ArrayList) nil)))
+)
+
+;;;   ---- test java call（段階2: static と new は、候補が1つなら直接呼ぶ） ----
+
+(java-import '[ java.util  HashMap ])
+
+;; コンストラクタ: 引数0個は1つだけ → 直接 new
+(defun jcall-7 ()
+   (new ArrayList))
+
+(if-compiles (compile 'jcall-7)
+   (assert-true "jcall-7"     (eql 0 (.size (jcall-7))))
+)
+
+;; コンストラクタ: 引数1個は (int) と (Collection) の2つ → リフレクション
+(defun jcall-8 (n)
+   (new ArrayList n))
+
+(if-compiles (compile 'jcall-8)
+   (assert-true "jcall-8"     (eql 0 (.size (jcall-8 10))))
+)
+
+;; 直接呼んだ static メソッドが例外を投げたら、インタプリタと同じくエラー（Condition）になる
+(defun jcall-4b (s)
+   (Integer:parseInt s))
+
+(if-compiles (compile 'jcall-4b)
+   (assert-true "jcall-4b"    (eq :err (handler-case (jcall-4b "abc") (error () :err))))
+)
+
+;; static: Math:abs は4つある → リフレクション
+(defun jcall-9 (x)
+   (Math:abs x))
+
+(if-compiles (compile 'jcall-9)
+   (assert-true "jcall-9"     (eql 3 (jcall-9 -3)))
+)
+
+;;;   ---- test %null（Java の null） ----
+
+;; 引数の %null は nil に変えずに Java へ渡す
+(defun jcall-10 (lst)
+   (.add lst %null)
+   (.-get lst 0))
+
+(if-compiles (compile 'jcall-10)
+   (assert-true "jcall-10"    (let ((v (jcall-10 (new ArrayList))))
+                                 (and (null v) (not (eq v nil)))))
+)
+
+;; Java が返した null も nil に変えない
+(defun jcall-11 (m)
+   (list (.get m "no-key")))
+
+(if-compiles (compile 'jcall-11)
+   (assert-true "jcall-11"    (let ((v (car (jcall-11 (new HashMap)))))
+                                 (and (null v) (not (eq v nil)))))
+)
+
+;;;   ---- test java call（段階3: (declare (java-type ...)) で型が分かるインスタンスメソッドは直接呼ぶ） ----
+
+(java-import '[ java.lang  StringBuilder ])
+
+(defun jcall-12 (s)
+   (declare (java-type String s))
+   (.length s))
+
+(if-compiles (compile 'jcall-12)
+   (assert-true "jcall-12"    (eql 3 (jcall-12 "abc")))
+)
+
+;; .trim の結果は String と分かるので、.length も直接呼ぶ
+(defun jcall-13 (s)
+   (declare (java-type String s))
+   (.length (.trim s)))
+
+(if-compiles (compile 'jcall-13)
+   (assert-true "jcall-13"    (eql 2 (jcall-13 "  ab  ")))
+)
+
+;; .m の戻り値の boolean は t / nil になる
+(defun jcall-14 (s x)
+   (declare (java-type String s))
+   (.startsWith s x))
+
+(if-compiles (compile 'jcall-14)
+   (assert-true "jcall-14-1"  (eq t   (jcall-14 "abc" "a")))
+   (assert-true "jcall-14-2"  (eq nil (jcall-14 "abc" "z")))
+)
+
+;; let の宣言
+(defun jcall-15 (x)
+   (let ((s x))
+      (declare (java-type String s))
+      (.length s)))
+
+(if-compiles (compile 'jcall-15)
+   (assert-true "jcall-15"    (eql 5 (jcall-15 "hello")))
+)
+
+;; 宣言と違う型の値を渡したら、インタプリタと同じくエラー
+(defun jcall-16 (s)
+   (declare (java-type String s))
+   (.length s))
+
+(if-compiles (compile 'jcall-16)
+   (assert-true "jcall-16"    (eq :err (handler-case (jcall-16 123) (error () :err))))
+)
+
+;; char を受け取るメソッド: 文字（LispCharacter）を char に変換して渡す
+(defun jcall-17 (sb)
+   (declare (java-type StringBuilder sb))
+   (.setCharAt sb 0 #\X)
+   (.toString sb))
+
+(if-compiles (compile 'jcall-17)
+   (assert-true "jcall-17"    (string= "Xbc" (jcall-17 (new StringBuilder "abc"))))
+)

@@ -1,0 +1,715 @@
+;  http://www.ulisp.com/
+;
+; uLisp Test Suite 32 bit
+; Version 3.6 - 18th May 2021
+;   MIT License
+
+
+;  このファイルは、インタープリタの動作確認用です。
+;  コンパイラのテストではありません。（コンパイラで出来る事は、現在非常に限られています）
+;
+;  実行方法    (test-file "mit/ulisp32.txt")
+;
+
+
+
+(defun teq (a b)
+  (cond
+   ((and (stringp a) (stringp b)) (string= a b))
+;   ((and (atom a) (atom b)) (eq a b))
+   ((and (atom a) (atom b)) (eql a b))
+   ((null a) nil)
+   ((null b) nil)
+   (t (and 
+       (teq (car a) (car b)) 
+       (teq (cdr a) (cdr b))))))
+
+
+
+(assert-true  "test-1"  (eql  9 (* -3 -3)))
+
+(assert-true  "test-2"  (eql  32580 (* 180 181)))
+
+(assert-true  "test-3"  (eql  1 (*)))
+
+(assert-true  "test-4"  (eql  32767 (+ 32765 1 1)))
+
+(assert-true  "test-5"  (eql  0 (+)))
+
+(assert-true  "test-6"  (eql  -2 (+ -1 -1)))
+
+(assert-true  "test-7"  (eql  -4 (- 4)))
+
+(assert-true  "test-8"  (eql  0 (- 4 2 1 1)))
+
+(assert-true  "test-9"  (eql  2 (/ 60 10 3)))
+
+(assert-true  "test-10"  (eql  2 (1+ 1)))      ; clojureのリーダーでは読めない
+
+(assert-true  "test-11"  (eql  0 (1+ -1)))
+
+(assert-true  "test-12"  (eql  0 (1- 1)))     ; clojureのリーダーでは読めない
+
+
+(assert-true  "test-13"  (< -32768 32767))
+
+(assert-true  "test-14"  (< -1 0))
+
+(assert-true  "test-15"  (< 1 2 3))
+
+(assert-true  "test-16"  (< 1))
+
+(assert-false  "test-17"  (< 1 3 2))
+
+(assert-false  "test-18"  (< -1  -2))
+
+(assert-false  "test-19"  (< 10  10))
+
+(assert-true  "test-20"  (<= 10 10))
+
+(assert-true  "test-21"  (= 32767 32767))
+
+(assert-true  "test-22"  (>= 10 10  ))
+
+(assert-false  "test-23"  (>= 9  10))
+
+;   Common Lisp の /= に対応するのは、Clojureでは：
+;   (not= a b ...)
+
+(assert-true  "test-24"  (/= 1  ))            ;; clojureでは  /=読めない
+
+(assert-false  "test-25"  (/= 1 2 1))         ;; ABCLのREADERに変更したので、 /= と書けるようになった
+
+(assert-false  "test-26"  (/= 1 2 3 1))     ;; ４引数に対応する
+
+(assert-true  "test-27"  (/= 1 2 3 4))        
+
+(assert-true  "test-28"  (plusp 1 ))
+
+(assert-false  "test-29"  (plusp 0))
+
+(assert-false  "test-30"  (plusp -1))
+
+(assert-false  "test-31"  (minusp 1))
+
+(assert-false  "test-30x"  (minusp 0))
+
+(assert-true  "test-31x"  (minusp -1 ))
+
+(assert-false  "test-32"  (zerop 1))
+
+(assert-true  "test-33"  (zerop 0 ))
+
+(assert-false  "test-34"  (zerop -1))
+
+(assert-false  "test-35"  (evenp 1))
+
+(assert-true  "test-36"  (evenp 0 ))
+
+(assert-false  "test-37"  (evenp -1))
+
+
+(assert-true  "test-38"  (oddp 1 ))
+
+(assert-false  "test-39"  (oddp 0))
+
+(assert-true  "test-40"  (oddp -1 ))
+
+(assert-true  "test-41" (eql 10  (abs 10 )))
+
+(assert-true  "test-42" (eql 10  (abs -10 )))
+
+(assert-true  "test-43" (eql 45  (max 23 45)))
+
+(assert-true  "test-44" (eql -23 (max -23 -45)))
+
+(assert-true  "test-45" (eql 23  (min 23 45)))
+
+(assert-true  "test-46" (eql -45 (min -23 -45)))
+
+(assert-false  "test-47"  (zerop 32767))
+
+(assert-true  "test-48" (eql 1 (mod 13 4)))
+
+(assert-true  "test-49" (eql 3 (mod -13 4)))
+
+(assert-true  "test-50" (eql -3 (mod 13 -4)))
+
+(assert-true  "test-51" (eql -1 (mod -13 -4)))
+
+;   (eql 'hex -1 #xFFFFFFFF)
+;  SBCLで上を実行すると、4294967295
+
+(assert-true  "test-52" (eql 4294967295    #xFFFFFFFF ))
+
+(assert-true  "test-53" (eql  1     #x0001  ))  ; clojureのリーダでは読めない
+(assert-true  "test-54" (eql  4112  #x1010  ))
+(assert-true  "test-55" (eql  511   #o777  ))
+(assert-true  "test-56" (eql  1     #o1   ))
+(assert-true  "test-57"  (eql 65535 #o177777 ))
+
+;  (eql 'bin -1 #b11111111111111111111111111111111)
+;  SBCLで上を実行すると、4294967295
+(assert-true  "test-58" (eql 4294967295  #b11111111111111111111111111111111  ))
+
+
+(assert-true  "test-59" (eql 10 #b1010  ))
+(assert-true  "test-60"  (eql  0 #b0     ))
+(assert-true  "test-61"  (eql  12 #'12   ))
+(assert-true  "test-62"  (eql  6 (funcall #'(lambda (x) (+ x 2)) 4)  ))
+
+
+(assert-true  "test-70" (eql 7 (and t t 7)))
+
+(assert-true  "test-71" (eql nil (and t nil 7)))
+
+(assert-true  "test-72" (eql t (or t nil 7)))
+
+(assert-true  "test-73" (eql nil (or nil nil nil)))
+
+(assert-true  "test-74" (eql 'a (or 'a 'b 'c)))
+
+(assert-true  "test-75" (eql 1 (let ((x 0)) (or (incf x)) x)) )
+
+
+(assert-true  "test-76"(eql  -1 (logand)    ))
+(assert-true  "test-77"(eql  170 (logand #xAA)    ))
+(assert-true  "test-78"(eql  0 (logand #xAAAA #x5555)   ))
+
+(assert-true  "test-79"(eql  0 (logior)) )
+
+(assert-true  "test-80"(eql  170 (logior #xAA)   ))
+(assert-true  "test-81"(eql  #xFFFF (logior #xAAAA #x5555)  ))
+(assert-true  "test-82"(eql  0 (logxor)   ))
+(assert-true  "test-83"(eql  170 (logior #xAA)   ))
+(assert-true  "test-84"(eql  255 (logxor #xAAAA #xAA55)  ))
+
+
+(assert-true  "test-85"(eql  -43691 (lognot #xAAAA)  ))
+
+(assert-true  "test- 86"(eql  492 (ash 123 2))  )
+
+(assert-true  "test-87"(eql  65535 (ash #xFFFF 0)  ))       ;   #xは読めない
+(assert-true  "test-89" (eql  16383 (ash #xFFFF -2)  ))
+(assert-true  "test-90"(eql  262140 (ash #xFFFF 2)  ))
+(assert-true  "test-91"(eql  8191 (ash #x7FFF -2)  ))
+
+
+(assert-true  "test-92"(eql  t (logbitp 0 1)  ))
+(assert-true  "test-93"(eql  t (logbitp 1000 -1)  ))
+(assert-true  "test-94"(eql  nil (logbitp 1000 0)  ))
+
+
+
+(assert-true  "test-100" (atom nil))
+
+(assert-true  "test-101" (atom t))
+
+(assert-false  "test-102"  (atom '(1 2)  ))
+
+(assert-false  "test-103"  (consp 'b  ))
+
+(assert-true  "test-104"  (consp '(a b)  ))
+
+(assert-false  "test-105"  (consp nil  ))
+
+(assert-false  "test-106"  (listp 'b  ))
+
+(assert-true  "test-107"  (listp '(a b)  ))
+
+(assert-true  "test-108"  (listp nil  ))
+
+
+(assert-true  "test-109"  (numberp (+ 1 2)  ))
+
+(assert-false  "test-110"  (numberp 'b  ))
+
+(assert-false  "test-111"  (numberp nil  ))
+
+(assert-true  "test-112"  (symbolp 'b  ))
+
+(assert-false  "test-113"  (symbolp 3  ))
+
+(assert-true  "test-114"  (symbolp nil  ))
+
+
+(assert-false  "test-120"  (streamp  'b ))
+
+(assert-false  "test-121"  (streamp  nil  ))
+
+;(assert-true  "test-130"  (let (x) (boundp 'x))  )
+; boundp の動作が、uLisp固有の動作で、 common lispとは動きが違うらしい
+
+(defvar *x* 123)
+(assert-true  "test-130"    (boundp '*x*))
+
+
+;(assert-false  "test-131"  (let (x) (boundp 'y))  )
+
+(defvar *y*)
+(assert-false  "test-131"   (boundp '*y*)  )
+
+
+
+;;  cxr operations
+
+
+(assert-true  "test-140" (eql   'a (car '(a b c))) )
+
+(assert-true  "test-141" (eql  nil (car nil) ) )
+
+(assert-true  "test-142" (eql   'a (first '(a b c))) )
+
+(assert-true  "test-143" (eql  nil (first nil) ) )
+
+(assert-true  "test-144"  (eql  'b (cdr '(a . b))))             ; READERがドット対を読めないかった
+
+(assert-true  "test-145" (eql  'b (car (cdr '(a b))) )) 
+
+(assert-true  "test-146" (eql nil (cdr nil)) ) 
+
+(assert-true  "test-147"  (eql  'b (rest '(a . b))))       ; READERがドット対を読めないかった
+
+(assert-true  "test-148" (eql 'b  (car  (rest  '(a b)    )) )) 
+
+(assert-true  "test-149" (eql nil (rest nil)) ) 
+
+(assert-true  "test-150" (eql 'a   (caaar '(((a))) ) ))
+
+(assert-true  "test-151" (eql nil   (caaar nil ) ))
+
+
+(assert-true  "test- 152"(eql  'nil (caaar nil))   )
+(assert-true  "test- 153"(eql  'b (caadr '(a (b))))   )
+(assert-true  "test- 154"(eql  'nil (caadr nil))   )
+(assert-true  "test- 155"(eql  'a (caar '((a))))   )
+(assert-true  "test- 156"(eql  'nil (caar nil))   )
+(assert-true  "test- 157"(eql  'c (cadar '((a c) (b))))   )
+(assert-true  "test- 158"(eql  'nil (cadar nil))   )
+(assert-true  "test- 159"(eql  'c (caddr '(a b c)))   )
+(assert-true  "test- 160"(eql  'nil (caddr nil))   )
+(assert-true  "test- 161"(eql  'b (cadr '(a b)))   )
+(assert-true  "test- 162"(eql  'nil (second '(a)))   )
+(assert-true  "test- 163"(eql  'b (second '(a b)))   )
+(assert-true  "test- 164"(eql  'nil (cadr '(a)))   )
+(assert-true  "test- 165"(eql  'c (caddr '(a b c)))   )
+(assert-true  "test- 166"(eql  'nil (caddr nil))   )
+(assert-true  "test- 167"(eql  'c (third '(a b c)))   )
+(assert-true  "test- 168"(eql  'nil (third nil))   )
+(assert-true  "test- 169"(eql  'b (car (cdaar '(((a b)) b c))))   )
+(assert-true  "test- 170"(eql  'nil (cdaar nil))   )
+(assert-true  "test- 171"(eql  'c (car (cdadr '(a (b c)))))   )
+(assert-true  "test- 172"(eql  'nil (cdadr nil))   )
+
+(assert-true  "test- 173"(eql 'b (car (cdar '((a b c)))))   )
+
+(assert-true  "test- 174"(eql  'nil (cdar nil))   )
+(assert-true  "test- 175"(eql  'c (car (cddar '((a b c)))))   )
+(assert-true  "test- 176"(eql  'nil (cddar nil))   )
+(assert-true  "test- 177"(eql  'd (car (cdddr '(a b c d))))   )
+
+(assert-true  "test-178"  (eql   nil (car (cdddr '(a b c)))))
+
+(assert-true  "test-179"  (eql   'c (car (cddr '(a b c)))))
+
+(assert-true  "test-180"  (eql   'nil (cddr '(a))))
+
+
+;; List operations
+
+(assert-true  "test-190" (eql  'a (car (cons 'a 'b))) )
+(assert-true  "test-191"    (eql   nil (car (cons nil 'b))))
+(assert-true  "test-192"    (eql 6 (length (append '(a b c) '(d e f)))))
+
+
+(assert-true  "test-193"  (eql  nil (append nil nil))    )
+(assert-true  "test-194"  (teq  '(1 2 3 4 5 . 6) (append '(1 2 3) '(4 5 . 6)))    )
+(assert-true  "test-195"  (eql  nil (car (list nil)))    )
+(assert-true  "test-196"  (eql  'a (car (list 'a 'b 'c)))    )
+(assert-true  "test-197"  (eql  'c (car (reverse '(a b c))))    )
+(assert-true  "test-198"  (eql  nil (reverse nil))    )
+
+
+(assert-true  "test-201"  (eql  0 (length nil))    )
+(assert-true  "test-202" (eql  4 (length '(a b c d)))    )
+(assert-true  "test-203" (eql  2 (length '(nil nil)))    )
+
+(assert-true  "test-204" (eql  nil (assoc 'b nil))    )
+(assert-true  "test-205" (eql  nil (assoc 'b '(nil nil)))    )
+
+(assert-true  "test-206" (teq  '(b . 12) (assoc 'b '((a . 10) (b . 12))))    )
+(assert-true  "test-207" (teq  '(nil . 12) (assoc nil '((a . 10) (nil . 12))))    )
+(assert-true  "test-208" (teq  '(b) (assoc 'b '((a . 10) (b))))    )
+
+;(assert-true  "test-209" (eql  2 (cadr (mapc + '(1 2 3 4))))    )
+;                                             +の前に何もつけないのは、SBCLでもエラーになる
+
+(assert-true  "test-209" (eql  2 (cadr (mapc '+ '(1 2 3 4)))         ))
+
+
+
+(assert-true  "test-210" (eql  10 (let ((x 0)) (mapc (lambda (y) (incf x y)) '(1 2 3 4)) x)    ))
+
+(assert-true  "test-211" (teq  '(1 4 9 16) (mapcar (lambda (x) (* x x)) '(1 2 3 4))    ))
+
+;(assert-true  "test-212" (teq  '(1 4 9 16) (mapcar * '(1 2 3 4) '(1 2 3 4)))    )
+;                                                 * の前に 'をつけないとエラーになる
+(assert-true  "test-212" (teq  '(1 4 9 16) (mapcar '* '(1 2 3 4) '(1 2 3 4)))    )
+
+
+(assert-true  "test-213" (teq  '(1 4 9 16 25) (mapcar (lambda (x) (* x x)) '(1 2 3 4 5)))    )
+
+
+;       サポートしない
+;214(eql 'mapcan '(1 4 2 5 3 6) (mapcan #'list '(1 2 3) '(4 5 6)))
+;215(eql 'mapcan '(1 3 2 4) (mapcan list '(1 2) '(3 4)))
+;216(eql 'mapcan '(1 5 9 2 6 10 3 7 11) (mapcan list '(1 2 3 4) '(5 6 7 8) '(9 10 11)))
+;217(eql 'mapcan '(1 2 3 . 4) (mapcan (lambda (x) x) '((1) (2) (3 . 4))))
+;218(eql 'mapcan '(2 3 . 4) (mapcan (lambda (x) x) '(nil (2) (3 . 4))))
+
+
+;;    let/let*/lambda 
+
+(assert-true  "test-220" (eql  7 (let ((x 7)) (let ((x 6) (y x)) y))   ) )
+(assert-true  "test-221" (eql  6 (let* ((x 7)) (let* ((x 6) (y x)) y))   ) )
+
+;(assert-true  "test-222" (eql  t (let ((x t) (y nil) (w) z) (and x (null y) (null w) (null z))))    )
+;                                                         z の書き方は、common lispで許されていない
+;                                                  未初期化で束縛したいなら (z)
+
+
+;(assert-true  "test-223"  (eql  t (let* ((x t) (y nil) (w) z) (and x (null y) (null w) (null z))))    )
+;                                                         z の書き方は、common lispで許されていない
+
+
+(assert-true   "test-224"  (eql  2 ((lambda (x y) (setq y x) y) 2 3))    )
+
+;(assert-true   "test-225"  (eql  9 ((lambda (&rest x) (apply + x)) 2 3 4))    )
+;                                                             +の前にクオートが必要
+(assert-true   "test-225"  (eql  9 ((lambda (&rest x) (apply '+ x)) 2 3 4))    )
+
+
+
+(assert-true   "test-226"  (eql  8 ((lambda (x &optional (y 4)) (* x y)) 2))    )
+(assert-true   "test-227"  (eql  6 ((lambda (x &optional (y 4)) (* x y)) 2 3))    )
+(assert-true   "test-228"  (eql  6 ((lambda (x &optional y) (* x y)) 2 3))    )
+(assert-true   "test-229"  (eql  123 ((lambda (list) list) 123))    )
+
+
+;;    loops and control 
+
+(assert-true   "test-230" (eql  8 (let ((x 6)) (progn (incf x) (incf x)))    ))
+(assert-true   "test-231" (eql  21 (let ((x 6)) (dotimes (y 6 x) (setq x (+ x y))))  ))
+(assert-true   "test-232" (eql  6 (let ((x 6)) (dotimes (y 6 y) (setq x (+ x y))))   ))
+(assert-true   "test-233" (eql  0 (let ((x 6)) (dotimes (y 0 y) (setq x (+ x y))))    ))
+(assert-true   "test-234" (eql  6 (let ((x 0)) (dolist (y '(1 2 3) x) (setq x (+ x y))))   ))
+(assert-true   "test-235" (eql  nil (let ((x 0)) (dolist (y '(1 2 3)) (setq x (+ x y))))    ))
+
+
+(assert-true   "test-236" (eql  nil (let ((x 0)) (dolist (y '(1 2 3) y) (setq x (+ x y))))    ))
+
+
+;(assert-true   "test-237" (eql  6 (let ((x 0)) (loop (when (= x 6) (return x)) (incf x))))    )
+;
+(assert-true   "test-237" (eql  6 (let ((x 0)) (simple-loop (when (= x 6) (return x)) (incf x))))    )
+
+
+;(assert-true   "test-238" (eql  6 (let ((x 0)) (loop (unless (< x 6) (return x)) (incf x))))    )
+;
+(assert-true   "test-238" (eql  6 (let ((x 0)) (simple-loop (unless (< x 6) (return x)) (incf x))))    )
+
+
+
+#| conditions |#
+
+(assert-true   "test-240" (eql  3 (let ((a 2)) (if (= a 2) 3 4)))    )
+(assert-true   "test-241" (eql  4 (let ((a 2)) (if (= a 3) 3 4)))    )
+(assert-true   "test-242" (eql  4 (let ((a 3)) (if (= a 3) 4)))    )
+(assert-true   "test-243" (eql  nil (let ((a 4)) (if (= a 3) 4)))    )
+(assert-true   "test-244" (eql  4 (let ((a 3)) (when (= a 3) 4)))    )
+(assert-true   "test-245" (eql  nil (let ((a 2)) (when (= a 3) 4)))    )
+(assert-true   "test-246" (eql  nil (let ((a 3)) (unless (= a 3) 4))   ))
+
+(assert-true   "test-247" (eql  4 (let ((a 2)) (unless (= a 3) 4))    ))
+
+(assert-true   "test-248" (eql  8 (let ((a 2)) (cond ((= a 3) 7) ((= a 2) 8) (t 9))))    )
+(assert-true   "test-249" (eql  9 (let ((a 1)) (cond ((= a 3) 7) ((= a 2) 8) (9))))    )
+(assert-true   "test-250" (eql  nil (let ((a 1)) (cond ((= a 3) 7) ((= a 2) 8))))    )
+(assert-true   "test-251" (eql  12 (car (cond ((evenp 3) (list (* 2 3))) ((list (* 3 4))))))    )
+
+(assert-true   "test-252" (eql  222 (let ((j 1)) (case j ((0 1) 111 222) ((t) 333) (t 444)))   ))
+(assert-true   "test-253" (eql  333 (let ((j t)) (case j ((0 1) 111 222) ((t) 333) (t 444)))   ))
+(assert-true   "test-254" (eql  444 (let ((j 2)) (case j ((0 1) 111 222) ((t) 333) (t 444)))   ))
+
+
+#| eval/funcall/apply |#
+
+;(assert-true   "test-255" (eql  10 (funcall + 1 2 3 4)  ))
+;                                        quoteが必要
+(assert-true   "test-255" (eql  10 (funcall '+ 1 2 3 4)  ))
+
+;(assert-true   "test-256" (eql  'a (funcall car '(a b c d))   ))
+;                                        quoteが必要
+(assert-true   "test-256" (eql  'a (funcall 'car '(a b c d))   ))
+
+(assert-true   "test-257" (eql  3 (let ((x 0)) (funcall (lambda (y) (incf x y)) 3) x)  ))
+
+;(assert-true   "test-258" (eql 10 (apply + '(1 2 3 4))  ))
+;                                        quoteが必要
+(assert-true   "test-258" (eql 10 (apply '+ '(1 2 3 4))  ))
+
+;(assert-true   "test-259" (eql  13 (apply + 1 2 '(1 2 3 4))  ))
+;                                        quoteが必要
+(assert-true   "test-259" (eql  13 (apply '+ 1 2 '(1 2 3 4))  ))
+
+
+;(assert-true   "test-260" (eql  10 (eval (list + 1 2 3 4))   ))
+;                                        quoteが必要
+(assert-true   "test-260" (eql  10 (eval (list '+ 1 2 3 4))   ))
+
+(assert-true   "test-261" (eql  nil (eval nil)   ))
+(assert-true   "test-262" (eql  999 (let ((x 999)) (funcall (lambda (x) x) x))   ))
+
+
+
+; (assert-true   "test-263" (eql  4 (let ((x2 (lambda (fun) (lambda (x) (funcall fun (funcall fun x)))))) (funcall (x2 '1+) 2))  ))
+;  SBCLでも動かない
+
+
+;(assert-true   "test-264" (eql  4 (let ((x2 (lambda (fun) (lambda (x) (fun (fun x)))))) ((x2 '1+) 2))   ))
+;  SBCLでも動かない
+
+;(assert-true   "test-265" (eql  5 (let* ((my (lambda (x y) (+ x y))) (han '(my))) (apply (first han) '(2 3)))   ))
+;  SBCLでも動かない
+
+
+
+#| in-place operations |#
+
+(assert-true   "test-266" (eql  6 (let ((x 0)) (+ (incf x) (incf x) (incf x)))  ))
+(assert-true   "test-267" (eql  12 (let ((x 0)) (+ (incf x 2) (incf x 2) (incf x 2)))  ))
+(assert-true   "test-268" (eql  36 (let ((n 10)) (let* ((f1 (lambda () (incf n) n))) (+ (funcall f1) (funcall f1) (funcall f1))))  ))
+
+(assert-true   "test-269" (eql  25 (let ((a 3) (b 4)) (setf a (* a 3) b (* b 4)) (+ a b))  ))
+
+
+
+
+
+;(assert-true   "test-270" (eql  9 (let ((a '(2 3))) (setf (car a) 6) (apply + a))   ))
+;(assert-true   "test-271" (eql  12 (let ((a '(2 3))) (setf (cdr a) '(6)) (apply * a))  ))
+;(assert-true   "test-272" (eql  220 (let ((a '(2 3 4))) (setf (nth 1 a) 11 (nth 2 a) 10) (apply * a))  ))
+;                 270-272 破壊的リスト操作は、本 Lispではサポートしない
+
+#| recursion |#
+
+; (assert-true   "test-273" (eql  55 (let ((fib (lambda (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 10))  ))
+;  SBCLでも動かない
+;    labels にして、lambdaを取り除いたら、SBCLで動いた
+
+(assert-true   "test-273" (eql  55  (labels ((fib  (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2)))))) (fib 10))    ))
+
+
+
+; (assert-true   "test-274" (eql  5040 (let ((f (lambda (n) (if (= n 0) 1 (* n (f (- n 1))))))) (f 7))  ))
+;  SBCLでも動かない
+;    labels にして、lambdaを取り除いたら、SBCLで動いた
+
+(assert-true   "test-274" (eql  5040 (labels ((f  (n) (if (= n 0) 1 (* n (f (- n 1)))))) (f 7))   ))
+
+
+
+; (assert-true   "test-275" (eql  10 (let ((a 0)) (let ((f (lambda (n) (incf a n) (when (> n 0) (f (1- n)))))) (f 4)) a)  ))
+;  SBCLでも動かない
+;    labels にして、lambdaを取り除いたら、SBCLで動いた
+
+(assert-true   "test-275" (eql  10  (let ((a 0)) (labels ((f  (n) (incf a n) (when (> n 0) (f (1- n))))) (f 4)) a)   ))
+
+
+
+
+#| streams |#
+
+; (assert-true   "test-276" (string=  "<string-stream 0>" (with-output-to-string (s) (princ s s))  ))
+;                                   表示のされ方が違うので期待値を変更
+(assert-true   "test-276" (string=  "#<instance io.github.shlisp.objects.ConcurrentConsoleOutputStream>"
+                                   (with-output-to-string (s) (princ s s))  ))
+
+
+(assert-true   "test-277" (string=  "12 23 34" (with-output-to-string (st) (format st "~a ~a ~a" 12 23 34))  ))
+
+
+#| printing |#
+
+(assert-true   "test-278" (string=  "hello" (princ-to-string "hello")    ))
+(assert-true   "test-279" (string=  "hello \"David\"" (princ-to-string "hello \"David\"")   ))
+(assert-true   "test-280" (string=  "\"hello\"" (prin1-to-string "hello")   ))
+(assert-true   "test-281" (string=  "\"hello \\\"David\\\"\"" (prin1-to-string "hello \"David\"")   ))
+
+#| format |#
+
+(assert-true   "test-282" (string=  "hello" (format nil "hello")   ))
+(assert-true   "test-283" (string=  "Hello23Goodbye" (format nil "Hello~aGoodbye" 23)   ))
+(assert-true   "test-284" (string=  "   17" (format nil "~5x" 23)   ))
+(assert-true   "test-285" (string=  " 10111" (format nil "~6b" 23)   ))
+
+;                                   "   17    23    23"
+(assert-true   "test-286" (string=  "   17    23    23" (format nil "~5x ~5d ~5a" 23 23 23)   ))
+
+(assert-true   "test-287" (string=  "00017 00023" (format nil "~5,'0x ~5,'0d" 23 23)   ))
+(assert-true   "test-288" (string=  "01-45-07" (format nil "~2,'0d-~2,'0d-~2,'0d" 1 45 7)  ))
+(assert-true   "test-289" (string=  "Hello42" (format nil "Hello~a" 42)   ))
+(assert-true   "test-290" (string=  "[1,2,3]" (format nil "[~{~a~^,~}]" '(1 2 3))   ))
+
+
+;(assert-true   "test-291" (string=  "0003.14159" (format nil "~10,'0g" 3.14159)   ))
+;                                                                 これはSBCLでもエラーになる
+
+;(assert-true   "test-292" (string=  "nil  nil" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
+;                                   ▽SBCLだと以下
+(assert-true   "test-292" (string=  "NIL  NIL" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
+
+
+#| strings |#
+
+(assert-true  "test-300"  (eql  t (stringp "hello")) )
+
+(assert-true  "test-301"  (eql  nil (stringp 5))  )
+(assert-true  "test-302"  (eql  nil (stringp '(a b)))  )
+(assert-true  "test-303"  (eql  nil (numberp "hello"))  )
+(assert-true  "test-304"  (eql  t (atom "hello"))  )
+(assert-true  "test-305"  (eql  nil (consp "hello"))  )
+(assert-true  "test-306"  (eql  nil (eq "hello" "hello"))  )
+(assert-true  "test-307"  (eql  t (let ((a "hello")) (eq a a)))  )
+(assert-true  "test-308"  (eql  0 (length ""))  )
+(assert-true  "test-309"  (eql  5 (length "hello"))  )
+(assert-true  "test-310"  (string=  "hello" (subseq "hellofromdavid" 0 5))  )
+(assert-true  "test-311"  (string=  "fromdavid" (subseq "hellofromdavid" 5))  )
+
+(assert-true  "test-312"  (eql  t (string= (concatenate 'string "A" "B") "AB"))  )
+(assert-true  "test-313"  (eql  3 (length (concatenate 'string "A" "BC")))  )
+(assert-true  "test-314"  (eql  0 (length (concatenate 'string)))  )
+(assert-true  "test-315"  (string=  "ABCD" (concatenate 'string "AB" "CD"))  )
+(assert-true  "test-316"  (string=  "ABCDE" (concatenate 'string "AB" "CDE"))  )
+(assert-true  "test-317"  (string=  "ABCDE" (concatenate 'string "ABC" "DE"))  )
+(assert-true  "test-318"  (string=  "ABCDEF" (concatenate 'string "ABC" "DEF"))  )
+
+(assert-true  "test-319"  (eql  nil (string< "cat" "cat"))  )
+(assert-true  "test-320"  (eql  t (string< "cat" "cat "))  )
+(assert-true  "test-321"  (eql  t (string< "fish" "fish "))  )
+(assert-true  "test-322"  (eql  nil (string> "cat" "cat"))  )
+(assert-true  "test-323"  (eql  t (string> "cat " "cat"))  )
+(assert-true  "test-324"  (string=  "albatross" (string "albatross"))  )
+(assert-true  "test-325"  (string=  "x" (string #\x))  )
+(assert-true  "test-326"  (string=  "cat" (string 'cat))  )
+(assert-true  "test-327"  (string=  "albatross" (string 'albatross))  )
+
+#| characters |#
+
+(assert-true  "test-330"  (eql  97 (char-code #\a))     )
+(assert-true  "test-331"  (eql  13 (char-code #\return))     )
+
+; (assert-true  "test-332"  (eql  255 (char-code #\255))     )
+;                                 △ SBCLではエラー
+
+(assert-true  "test-333"  (eql  #\return (code-char 13))     )
+
+
+(assert-true  "test-334"  (eql  #\a (code-char 97))     )
+
+; (assert-true  "test-335"  (eql  #\255 (code-char 255))     )
+;                                 △ SBCLではエラー
+
+(assert-true  "test-336"   (eq #\b #\b)     )
+; Common Lispの仕様 では、文字(character)に対する eq の結果は処理系依存らしい
+
+(assert-false  "test-337"   (eq #\b #\B)     )
+; Common Lispの仕様 では、文字(character)に対する eq の結果は処理系依存らしい
+
+(assert-false  "test-338"   (numberp #\b)     )
+
+(assert-true  "test-339"   (characterp #\b)     )
+
+
+(assert-true  "test-340"  (eql  #\o (char "hello" 4))     )
+
+(assert-true  "test-341"  (eql  #\h (char "hello" 0))     )
+
+
+
+(assert-true  "test-342"  (string=  "A" (princ-to-string (code-char 65)))     )
+
+(assert-true  "test-343"  (string=  "[#\\Bel]" (format nil "[~s]" (code-char 7)))     )
+;                                   △ SBCLでは BellでなくBel ( lが１つ少ない)
+
+(assert-true  "test-344"  (string=  "[#\\Return]" (format nil "[~s]" #\return))     )
+
+;(assert-true  "test-345"  (string=  "[#\\127]" (format nil "[~s]" #\127))     )
+;                                 △ SBCLではエラー
+
+;(assert-true  "test-346"  (string=  "[#\\255]" (format nil "[~s]" #\255))     )
+;                                 △ SBCLではエラー
+
+
+#| read-from-string |#
+
+(assert-true  "test-350"  (eql  123 (read-from-string "123")      ))
+(assert-true  "test-351"  (eql  144 (eval (read-from-string "((lambda (x) (* x x)) 12)"))      ))
+(assert-true  "test-352"  (eql  t   (eval (read-from-string "(eq (+ 2 3) 5)"))    )  )
+(assert-true  "test-353"  (eql  nil (read-from-string "()")    )   )
+
+
+#| arrays |#
+
+; (assert-true  "test-360"  (equal  '(0 0) (array-dimensions #2a()))     )
+(assert-true  "test-360"  (equal  '(2 2)   (array-dimensions #2a((1 2)(3 4)) )    ))
+
+
+; (assert-true  "test-361"  (equal  '(1 0) (array-dimensions #2a(())))     )
+(assert-true  "test-361"  (equal  '(1 2)    (array-dimensions #2a((1 2)) )    ))
+
+; (assert-true  "test-362"  (equal  '(2 0) (array-dimensions #2a(() ())))     )
+(assert-true  "test-362"  (equal  '(2 3)   (array-dimensions #2a((1 2 3) (4 5 6)) )   ))
+
+
+;(assert-true  "test-363"  (equal  '(0) (array-dimensions (make-array '(0))))     )
+(assert-true  "test-363"  (equal  '(10) (array-dimensions (make-array  10 :initial-element 1))   ))
+
+;(assert-true  "test-364"  (equal  '(0) (array-dimensions (make-array 0)))     )
+(assert-true  "test-364"  (equal  '(3 5)   (array-dimensions  (make-array '(3 5) :initial-element 1))  ))
+
+
+(assert-true  "test-365"  (eql  1 (let ((a (make-array 3 :initial-element 0))) (incf (aref a (+ 1 1))) (aref a 2))   ))
+
+
+
+(assert-true  "test-366"  (eql  1 (let ((a (make-array '(3) :initial-element 0))) (incf (aref a (+ 1 1))) (aref a 2)))     )
+
+
+
+(assert-true  "test-367"  (eql  1 (let ((a (make-array '(2 3) :initial-element 0))) (incf (aref a 1 (+ 1 1))) (aref a 1 2)))     )
+
+(assert-true  "test-368"  (eql  1 (let ((a (make-array '(2 3 2 2) :initial-element 0))) (incf (aref a 1 (+ 1 1) 1 1)) (aref a 1 2 1 1)))     )
+
+(assert-true  "test-369"  (eql  10 (length (make-array 10 :initial-element 1)))     )
+
+
+#| bit arrays |#
+;; bit arrayは実装していない
+
+
+
+
+
+
+#|
+    1 errors
+
+
+
+{:test-success 287
+  :test-fail ("test-336") :test-debugger nil}
+
+|#
+
+

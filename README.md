@@ -59,7 +59,7 @@ Provide a subset of Common Lisp implemented on Java that is far easier to learn 
 
 * Install Java 25.
 
-* Download the TinyLisp ZIP archive.
+* Download the TinyLisp ZIP archive.  (ex. 20261021.ZIP )
 
 * Extract it to any folder.
 

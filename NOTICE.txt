@@ -1,0 +1,26 @@
+SILVER HAIRED LISP
+
+Copyright 2026   Masahito Hemmi
+
+-------------------------------------------------------------------------
+
+
+This product contains pieces of software borrowed from:
+
+
+Armed Bear Common Lisp (ABCL)   GNU General Public License with Classpath exception,
+                                meaning that you can use ABCL in your application without the requirement to open the sources to your application.
+
+
+Apache Commons BeanUtils        Copyright 2000-2026 The Apache Software Foundation
+
+
+Hipparchus                      Copyright 2016-2021 The Hipparchus project
+                                Apache License 2.0
+
+
+SLF4J                           Copyright  2004-2025 QOS.ch Sarl (Switzerland)
+
+
+Logback                         Copyright  2026 QOS.ch Sarl (Switzerland)
+

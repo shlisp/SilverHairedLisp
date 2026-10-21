@@ -1,0 +1,54 @@
+LICENSE.txt
+日本語版（原文）
+■ 利用許諾契約（License Agreement）
+
+本ソフトウェア（バイナリ、ソースコード、および関連ドキュメントを含む）の利用・アクセスにあたり、以下の条件が適用されます。
+
+1. 利用許諾
+・本ソフトウェアは、個人・法人を問わず、目的を問わず無償で利用することができます。
+
+2. プラグインおよび拡張機能の開発
+・ユーザーは、本ソフトウェア向けのプラグイン、アドオン、または拡張機能を自由に開発、配布、および（有償・無償を問わず）提供することができます。
+・本ソフトウェアが提供する公式APIまたは外部インターフェースを利用したプラグイン開発を全面的に歓迎します。
+
+3. 禁止事項
+・本ソフトウェア本体（バイナリおよびソースコード）を、開発者の事前の書面による許可なく第三者へ二次配布、再販売、転載することを禁止します。
+・本ソフトウェア本体をそのまま、あるいは軽微な変更を加えた状態で、競合製品または商用製品として再配布・販売することを禁止します。
+・（ソースコードへのアクセス権を持つ場合）許可なくソースコードをパブリックに公開・転記することを禁止します。
+
+4. 免責事項
+・本ソフトウェアは「現状有姿（As-Is）」で提供され、動作保証やサポートの義務を負いません。
+・本ソフトウェアの使用によって生じた一切の損害について、開発者は責任を負いません。
+
+5. 著作権
+・本ソフトウェアに関するすべての著作権および知的財産権は、開発者に帰属します。
+
+
+English Version (Reference Translation)
+■ License Agreement
+
+The following terms apply to the use and access of this software, including its binaries, source code, and related documentation.
+
+1. Permission
+This software may be used free of charge by individuals or organizations for any purpose.
+
+2. Plugins and Extensions
+Users may freely develop, distribute, and provide plugins, add-ons, or extensions for this software, whether paid or free.
+Development using the official API or external interfaces provided by this software is fully welcomed.
+
+3. Prohibited Actions
+Redistribution, resale, or rehosting of the software (binaries or source code) without prior written permission from the developer is prohibited.
+Redistributing or selling the software, either as-is or with minor modifications, as a competing or commercial product is prohibited.
+If the user has access to the source code, publishing or copying the source code publicly without permission is prohibited.
+
+4. Disclaimer
+This software is provided “as-is” without any warranty or obligation of support.
+The developer assumes no responsibility for any damages arising from the use of this software.
+
+5. Copyright
+All copyrights and intellectual property rights related to this software belong to the developer.
+
+原文優先（重要）
+本ライセンスの法的解釈は日本語版を優先します。
+英語版は参考翻訳です。
+

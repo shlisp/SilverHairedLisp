@@ -19,6 +19,10 @@ Hipparchus                      Copyright 2016-2021 The Hipparchus project
                                 Apache License 2.0
 
 
+jline                           Copyright (c) 2002-2023, the original author or authors.     All rights reserved.
+                                https://opensource.org/licenses/BSD-3-Clause
+
+
 SLF4J                           Copyright  2004-2025 QOS.ch Sarl (Switzerland)
 
 

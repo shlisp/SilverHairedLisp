@@ -69,7 +69,10 @@ Provide a subset of Common Lisp implemented on Java that is far easier to learn 
 
     macOS: Run the shllog.sh and shlmac.sh  script
 
-For more detailed syntax and current limitations, please refer to the separate documentation (xxxx.md) within the GitHub repository.
+For more detailed syntax and current limitations, please refer to the 
+
+https://zenn.dev/books/a79ab1cb9f7b57/edit
+
 
 ## Feedback
 

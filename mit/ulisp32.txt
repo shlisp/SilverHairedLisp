@@ -532,7 +532,7 @@
 
 ; (assert-true   "test-276" (string=  "<string-stream 0>" (with-output-to-string (s) (princ s s))  ))
 ;                                   表示のされ方が違うので期待値を変更
-(assert-true   "test-276" (string=  "#<instance io.github.shlisp.objects.ConcurrentConsoleOutputStream>"
+(assert-true   "test-276" (string=  "#<string-output-stream>"
                                    (with-output-to-string (s) (princ s s))  ))
 
 
@@ -553,8 +553,8 @@
 (assert-true   "test-284" (string=  "   17" (format nil "~5x" 23)   ))
 (assert-true   "test-285" (string=  " 10111" (format nil "~6b" 23)   ))
 
-;                                   "   17    23    23"
-(assert-true   "test-286" (string=  "   17    23    23" (format nil "~5x ~5d ~5a" 23 23 23)   ))
+;                                   SBCLに合わせた
+(assert-true   "test-286" (string=  "   17    23 23   " (format nil "~5x ~5d ~5a" 23 23 23)   ))
 
 (assert-true   "test-287" (string=  "00017 00023" (format nil "~5,'0x ~5,'0d" 23 23)   ))
 (assert-true   "test-288" (string=  "01-45-07" (format nil "~2,'0d-~2,'0d-~2,'0d" 1 45 7)  ))
@@ -565,9 +565,9 @@
 ;(assert-true   "test-291" (string=  "0003.14159" (format nil "~10,'0g" 3.14159)   ))
 ;                                                                 これはSBCLでもエラーになる
 
-;(assert-true   "test-292" (string=  "nil  nil" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
+(assert-true   "test-292" (string=  "nil  nil" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
 ;                                   ▽SBCLだと以下
-(assert-true   "test-292" (string=  "NIL  NIL" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
+;(assert-true   "test-292" (string=  "NIL  NIL" (format nil "~a ~{ ~a ~} ~a" nil nil nil)   ))
 
 
 #| strings |#
@@ -594,11 +594,22 @@
 (assert-true  "test-317"  (string=  "ABCDE" (concatenate 'string "ABC" "DE"))  )
 (assert-true  "test-318"  (string=  "ABCDEF" (concatenate 'string "ABC" "DEF"))  )
 
-(assert-true  "test-319"  (eql  nil (string< "cat" "cat"))  )
-(assert-true  "test-320"  (eql  t (string< "cat" "cat "))  )
-(assert-true  "test-321"  (eql  t (string< "fish" "fish "))  )
+
+;(assert-true  "test-319"  (eql  nil (string< "cat" "cat"))  )
+
+
+;(assert-true  "test-320"  (eql  t (string< "cat" "cat "))  )
+;                               ▼ SBCL, CLに合わせた
+(assert-true  "test-320"  (eql  3 (string< "cat" "cat "))  )
+
+
+
+(assert-true  "test-321"  (eql  4 (string< "fish" "fish "))  )
+
 (assert-true  "test-322"  (eql  nil (string> "cat" "cat"))  )
-(assert-true  "test-323"  (eql  t (string> "cat " "cat"))  )
+
+
+(assert-true  "test-323"  (eql  3 (string> "cat " "cat"))  )
 (assert-true  "test-324"  (string=  "albatross" (string "albatross"))  )
 (assert-true  "test-325"  (string=  "x" (string #\x))  )
 (assert-true  "test-326"  (string=  "cat" (string 'cat))  )

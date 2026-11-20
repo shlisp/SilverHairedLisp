@@ -71,7 +71,7 @@ Provide a subset of Common Lisp implemented on Java that is far easier to learn 
 
 For more detailed syntax and current limitations, please refer to the 
 
-https://zenn.dev/books/a79ab1cb9f7b57/edit
+https://zenn.dev/clazz/books/a79ab1cb9f7b57
 
 
 ## Feedback
